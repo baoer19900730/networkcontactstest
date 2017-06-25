@@ -38,7 +38,7 @@ public class ContactsAdapter extends ArrayAdapter<Contacts> {
         TextView telephone = (TextView) view.findViewById(R.id.telephone);
         user.setText(contacts.getName());
         telephone.setText(contacts.getTelephone());
-        imageView.setImageURI(Uri.parse(contacts.getimageUrl()));
+        imageView.setImageBitmap(contacts.getimageUrl());
         return view;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.zhou.networkcontactstest;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by zhou on 2017/6/25.
  */
@@ -10,9 +12,9 @@ public class Contacts {
 
     private String telephone;
 
-    private String imageUrl;
+    private Bitmap imageUrl;
 
-    public Contacts(String name, String telephone, String imageUrl){
+    public Contacts(String name, String telephone, Bitmap imageUrl){
         this.name = name;
         this.telephone = telephone;
         this.imageUrl = imageUrl;
@@ -26,7 +28,7 @@ public class Contacts {
         return  telephone;
     }
 
-    public String getimageUrl(){
+    public Bitmap getimageUrl(){
         return imageUrl;
     }
 }

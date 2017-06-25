@@ -1,5 +1,7 @@
 package com.example.zhou.networkcontactstest;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
@@ -13,7 +15,10 @@ import android.widget.ListView;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.InputStream;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +28,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+
+    String icon = "";
 
     public static final int UPDATE_TEXT = 1;
 
@@ -36,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     ContactsAdapter adapter = new ContactsAdapter(MainActivity.this, R.layout.contacts_item, contactsList);
                     ListView listView = (ListView)findViewById(R.id.list_view);
                     listView.setAdapter(adapter);
+
                     break;
                 default:
                     break;
@@ -76,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
       }).start();
   }
 
-    private void parseXMLWithPull(String xmlData){
+    public void parseXMLWithPull(String xmlData){
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             XmlPullParser xmlPullParser = factory.newPullParser();
@@ -85,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String id ="";
             String name = "";
             String telephone = "";
-            String icon = "";
+
             while (eventType != XmlPullParser.END_DOCUMENT){
                 String nodeName = xmlPullParser.getName();
                 switch (eventType){
@@ -107,26 +115,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Log.d("MainActivity", "name is " + name);
                             Log.d("MainActivity", "telephone is "+ telephone);
                             Log.d("MainActivity", "icon is " + icon);
+                            Contacts data = new Contacts(name, telephone, getBitmap(icon));
+                            contactsList.add(data);
+                            Message message = new Message();
+                            message.what = UPDATE_TEXT;
+                            handler.sendMessage(message);
                         }
                         break;
                     }
                     default:
                         break;
                 }
-                Contacts data = new Contacts(name, telephone, Uri.decode(icon));
-                contactsList.add(data);
-                Message message = new Message();
-                message.what = UPDATE_TEXT;
-                handler.sendMessage(message);
                 eventType = xmlPullParser.next();
 
             }
-
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
     }
-
+    private Bitmap getBitmap(String urlStr) throws Exception {
+        URL url = new URL(urlStr);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        InputStream is = conn.getInputStream();
+        Bitmap bitmap = BitmapFactory.decodeStream(is);
+        is.close();
+        return bitmap;
+    }
 }
